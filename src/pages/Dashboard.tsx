@@ -118,8 +118,8 @@ export default function Dashboard() {
       title: 'Receita do Mês',
       value: `R$ ${stats.totalRevenue.toFixed(2)}`,
       icon: TrendingUp,
-      color: 'text-[#FF6B6B]',
-      bgColor: 'bg-red-50',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
       onClick: () => navigate('/finance'),
     },
   ];
@@ -132,7 +132,7 @@ export default function Dashboard() {
           <p className="text-gray-600 mt-1">Visão geral do sistema</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild className="bg-[#FF6B6B] hover:bg-[#FF5252]">
+          <Button asChild className="bg-primary hover:bg-primary/90">
             <Link to="/items">
               <Plus className="h-4 w-4 mr-2" />
               Novo Item
@@ -213,7 +213,7 @@ export default function Dashboard() {
                       <p className="text-gray-500 text-xs">{order.code}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-[#FF6B6B]">
+                      <p className="font-medium text-destructive">
                         {order.return_date ? format(new Date(order.return_date), 'dd/MM/yyyy') : '-'}
                       </p>
                       <p className="text-gray-500 text-xs">{order.items.length} itens</p>

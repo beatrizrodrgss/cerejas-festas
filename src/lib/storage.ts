@@ -38,9 +38,17 @@ function getFromStorage<T>(key: string): T[] {
     }
 }
 
+import { pushToFirestore } from './firestoreSync';
+
 function saveToStorage<T>(key: string, data: T[]): void {
     try {
         localStorage.setItem(key, JSON.stringify(data));
+
+        // Fire and forget sync (don't await)
+        pushToFirestore(key, data as any[]).catch(err =>
+            console.error('Background Sync Error:', err)
+        );
+
     } catch (error) {
         console.error(`Error saving ${key} to storage:`, error);
         throw new Error('Erro ao salvar dados');
@@ -551,6 +559,64 @@ export const userStorage = {
         const filtered = users.filter(u => u.id !== id);
         saveToStorage(STORAGE_KEYS.USER, filtered);
         createAuditLog(adminUser.id, adminUser.name, 'DELETE', 'USER', id, {});
+    },
+
+    changePassword(userId: string, currentPassword: string, newPassword: string): boolean {
+        const users = this.getAll();
+        const userIndex = users.findIndex(u => u.id === userId);
+
+        if (userIndex === -1) {
+            throw new Error('Usuário não encontrado');
+        }
+
+        const user = users[userIndex] as any;
+
+        // Verify current password
+        if (user.password !== currentPassword) {
+            throw new Error('Senha atual incorreta');
+        }
+
+        // Validate new password
+        if (!newPassword || newPassword.length < 4) {
+            throw new Error('Nova senha deve ter no mínimo 4 caracteres');
+        }
+
+        // Update password
+        user.password = newPassword;
+        saveToStorage(STORAGE_KEYS.USER, users);
+        createAuditLog(userId, user.name, 'UPDATE', 'USER', userId, { action: 'password_changed' });
+
+        return true;
+    },
+
+    resetPassword(userId: string, newPassword: string, admin: User): boolean {
+        if (admin.role !== 'admin') {
+            throw new Error('Apenas administradores podem resetar senhas');
+        }
+
+        const users = this.getAll();
+        const userIndex = users.findIndex(u => u.id === userId);
+
+        if (userIndex === -1) {
+            throw new Error('Usuário não encontrado');
+        }
+
+        const user = users[userIndex] as any;
+
+        // Validate new password
+        if (!newPassword || newPassword.length < 4) {
+            throw new Error('Nova senha deve ter no mínimo 4 caracteres');
+        }
+
+        // Update password
+        user.password = newPassword;
+        saveToStorage(STORAGE_KEYS.USER, users);
+        createAuditLog(admin.id, admin.name, 'UPDATE', 'USER', userId, {
+            action: 'password_reset_by_admin',
+            target_user: user.email
+        });
+
+        return true;
     },
 
     validateLogin(email: string, password: string): User | null {

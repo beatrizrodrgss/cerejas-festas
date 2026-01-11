@@ -132,7 +132,7 @@ export default function ItemsPage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" />
               Novo Item
             </Button>
@@ -281,12 +281,20 @@ export default function ItemsPage() {
                   <p className="font-medium capitalize">{selectedItem.category}</p>
                 </div>
                 <div>
+                  <Label className="text-gray-500">Dimensões</Label>
+                  <p className="font-medium">{selectedItem.dimensions || '-'}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-500">Material</Label>
+                  <p className="font-medium">{selectedItem.material || '-'}</p>
+                </div>
+                <div>
                   <Label className="text-gray-500">Localização</Label>
                   <p className="font-medium">{selectedItem.location || 'Não informado'}</p>
                 </div>
                 <div>
                   <Label className="text-gray-500">Valor Locação</Label>
-                  <p className="font-bold text-[#FF6B6B]">R$ {Number(selectedItem.rental_value).toFixed(2)}</p>
+                  <p className="font-bold text-primary">R$ {Number(selectedItem.rental_value).toFixed(2)}</p>
                 </div>
                 <div>
                   <Label className="text-gray-500">Valor Reposição</Label>
@@ -315,9 +323,9 @@ export default function ItemsPage() {
 
               {/* Maintenance / Damage Info */}
               {selectedItem.condition === 'DAMAGED' && (
-                <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                  <h3 className="font-semibold text-red-700 mb-1">Registro de Dano</h3>
-                  <p className="text-red-600">{selectedItem.damage_description || 'Sem descrição do dano.'}</p>
+                <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20">
+                  <h3 className="font-semibold text-destructive mb-1">Registro de Dano</h3>
+                  <p className="text-destructive">{selectedItem.damage_description || 'Sem descrição do dano.'}</p>
                 </div>
               )}
 
@@ -357,7 +365,7 @@ export default function ItemsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

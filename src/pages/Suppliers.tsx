@@ -145,7 +145,7 @@ export default function Suppliers() {
           }
         }}>
           <DialogTrigger asChild>
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" />
               Novo Fornecedor
             </Button>
@@ -181,7 +181,7 @@ export default function Suppliers() {
                 <Label>Observações</Label>
                 <Input value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
               </div>
-              <Button type="submit" className="w-full bg-[#FF6B6B] hover:bg-[#FF5252]">Salvar</Button>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Salvar</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -244,7 +244,7 @@ export default function Suppliers() {
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(supplier)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(supplier.id)}>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(supplier.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

@@ -96,7 +96,7 @@ export default function Orders() {
           <h1 className="text-3xl font-bold text-gray-900">Pedidos</h1>
           <p className="text-gray-600 mt-1">Gerencie locações e orçamentos</p>
         </div>
-        <Button asChild className="bg-[#FF6B6B] hover:bg-[#FF5252]">
+        <Button asChild className="bg-primary hover:bg-primary/90">
           <Link to="/orders/new">
             <Plus className="h-4 w-4 mr-2" />
             Nova Locação
@@ -148,7 +148,7 @@ export default function Orders() {
                 </div>
                 <div>
                   <p className="text-gray-500">Valor Total</p>
-                  <p className="font-semibold text-[#FF6B6B]">R$ {(order.total_value ?? 0).toFixed(2)}</p>
+                  <p className="font-semibold text-primary">R$ {(order.total_value ?? 0).toFixed(2)}</p>
                 </div>
               </div>
               <div className="mt-4 flex justify-end">
@@ -217,7 +217,7 @@ export default function Orders() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
               Excluir Definifivamente
             </AlertDialogAction>
           </AlertDialogFooter>

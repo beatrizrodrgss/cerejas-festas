@@ -75,6 +75,8 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
     quantity_maintenance: initialData?.quantity_maintenance || 0,
     rental_value: initialData?.rental_value || '',
     replacement_value: initialData?.replacement_value || '',
+    dimensions: initialData?.dimensions || '',
+    material: initialData?.material || '',
     conservation_status: initialData?.condition || ItemCondition.NORMAL,
     damage_description: initialData?.damage_description || ''
   });
@@ -229,6 +231,8 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
         quantity_available: Number(formData.quantity_total) - Number(formData.quantity_maintenance),
         rental_value: Number(formData.rental_value),
         replacement_value: Number(formData.replacement_value),
+        dimensions: formData.dimensions,
+        material: formData.material,
         condition: formData.conservation_status,
         damage_description: formData.damage_description,
         photos: photos,
@@ -373,6 +377,26 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
             )}
           </div>
 
+          <div>
+            <Label htmlFor="dimensions">Dimensões (cm/m)</Label>
+            <Input
+              id="dimensions"
+              value={formData.dimensions}
+              onChange={(e) => handleChange('dimensions', e.target.value)}
+              placeholder="Ex: 30x30 cm ou 1.5m diâmetro"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="material">Material</Label>
+            <Input
+              id="material"
+              value={formData.material}
+              onChange={(e) => handleChange('material', e.target.value)}
+              placeholder="Ex: Porcelana, Madeira, MDF"
+            />
+          </div>
+
           <div className="col-span-2">
             <Label htmlFor="description">Descrição</Label>
             <Textarea
@@ -408,7 +432,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
 
               {/* Opção 1: Upload de Arquivo */}
               <div
-                className="relative w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-colors gap-1"
+                className="relative w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary transition-colors gap-1"
                 onClick={() => fileInputRef.current?.click()}
                 title="Carregar fotos"
               >
@@ -426,7 +450,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
 
               {/* Opção 2: Tirar Foto na Hora */}
               <div
-                className="relative w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-colors gap-1"
+                className="relative w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary transition-colors gap-1"
                 onClick={startCamera}
                 title="Tirar foto na hora"
               >
@@ -447,7 +471,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
                     value={ItemCondition.NORMAL}
                     checked={formData.conservation_status === ItemCondition.NORMAL}
                     onChange={() => handleChange('conservation_status', ItemCondition.NORMAL)}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-primary"
                   />
                   <span>Normal</span>
                 </label>
@@ -458,7 +482,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
                     value={ItemCondition.DAMAGED}
                     checked={formData.conservation_status === ItemCondition.DAMAGED}
                     onChange={() => handleChange('conservation_status', ItemCondition.DAMAGED)}
-                    className="w-4 h-4 text-red-600"
+                    className="w-4 h-4 text-destructive"
                   />
                   <span>Danificado</span>
                 </label>
@@ -497,7 +521,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
           >
             Cancelar
           </Button>
-          <Button type="submit" className="bg-red-600 hover:bg-red-700">
+          <Button type="submit" className="bg-primary hover:bg-primary/90">
             Salvar Item
           </Button>
         </div>
@@ -522,7 +546,7 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
             </div>
             <div className="flex gap-2 w-full justify-center">
               <Button variant="outline" onClick={stopCamera}>Cancelar</Button>
-              <Button onClick={capturePhoto} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={capturePhoto} className="bg-primary hover:bg-primary/90">
                 <Camera className="w-4 h-4 mr-2" />
                 Capturar
               </Button>

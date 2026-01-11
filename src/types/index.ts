@@ -102,6 +102,8 @@ export interface Item {
     damage_photo?: string;
     rental_value: number;
     replacement_value: number;
+    dimensions?: string;
+    material?: string;
     photos: string[];
     supplier_id?: string;
     created_by: string;

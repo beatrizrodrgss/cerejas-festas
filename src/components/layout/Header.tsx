@@ -1,4 +1,4 @@
-import { Bell, User, Settings, LogOut } from 'lucide-react';
+import { Bell, User, Settings, LogOut, Info, AlertTriangle, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,71 +9,28 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
-import { auditStorage } from '@/lib/storage';
-import { AuditLog } from '@/types';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 
 export function Header() {
   const { user, logout } = useAuth();
+  const { notifications, unreadCount, markAllAsRead, markAsRead } = useNotifications();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<AuditLog[]>([]);
-  const [hasUnread, setHasUnread] = useState(false);
-
-  useEffect(() => {
-    // Poll for notifications every 30s or on mount
-    const loadNotifications = () => {
-      const allLogs = auditStorage.getAll();
-      // Filter logs from last 24h
-      const recent = allLogs.filter(log => {
-        const logDate = new Date(log.created_at);
-        const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-        return logDate > oneDayAgo;
-      }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      setNotifications(recent);
-      // Logic for unread could be stored in local storage "lastReadTime"
-      const lastRead = localStorage.getItem('notifications_last_read');
-      if (recent.length > 0) {
-        if (!lastRead || new Date(recent[0].created_at).getTime() > new Date(lastRead).getTime()) {
-          setHasUnread(true);
-        }
-      }
-    };
-
-    loadNotifications();
-    const interval = setInterval(loadNotifications, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleNotificationsOpen = (open: boolean) => {
-    if (open && notifications.length > 0) {
-      setHasUnread(false);
-      localStorage.setItem('notifications_last_read', new Date().toISOString());
+    if (open && unreadCount > 0) {
+      markAllAsRead();
     }
   };
 
-  const formatAction = (log: AuditLog) => {
-    switch (log.action) {
-      case 'CREATE': return 'criou';
-      case 'UPDATE': return 'atualizou';
-      case 'DELETE': return 'excluiu';
-      case 'DELETE_ALL': return 'limpou tudo em';
-      default: return log.action;
-    }
-  };
-
-  const formatEntity = (type: string) => {
+  const getIcon = (type: string) => {
     switch (type) {
-      case 'ITEM': return 'item';
-      case 'ORDER': return 'pedido';
-      case 'CLIENT': return 'cliente';
-      case 'SUPPLIER': return 'fornecedor';
-      case 'USER': return 'usuário';
-      default: return type;
+      case 'STOCK': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+      case 'ORDER_LATE': return <AlertTriangle className="h-4 w-4 text-destructive" />;
+      case 'ORDER_TODAY': return <Calendar className="h-4 w-4 text-blue-500" />;
+      default: return <Info className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -82,39 +39,57 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">
-            Sistema Cérebro Cerejas
+            Controle de estoque
           </h1>
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Notifications */}
           <DropdownMenu onOpenChange={handleNotificationsOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                {hasUnread && (
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive animate-pulse"></span>
                 )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80 p-0" align="end">
-              <div className="p-4 border-b">
-                <h4 className="font-semibold leading-none">Notificações Recentes</h4>
-                <p className="text-xs text-muted-foreground mt-1">Últimas 24 horas</p>
+              <div className="p-4 border-b flex justify-between items-center">
+                <h4 className="font-semibold leading-none">Notificações</h4>
+                <span className="text-xs text-muted-foreground">{notifications.length} alertas</span>
               </div>
               <div className="max-h-[300px] overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-gray-500">Nenhuma notificação.</div>
+                  <div className="p-8 text-center text-sm text-gray-500 flex flex-col items-center gap-2">
+                    <Bell className="h-8 w-8 text-gray-300" />
+                    <p>Tudo tranquilo por aqui!</p>
+                  </div>
                 ) : (
                   <div className="divide-y">
-                    {notifications.map(log => (
-                      <div key={log.id} className="p-3 text-sm hover:bg-gray-50">
-                        <p>
-                          <span className="font-medium">{log.user_name}</span> {formatAction(log)} um(a) {formatEntity(log.entity_type)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}
-                        </p>
+                    {notifications.map(notification => (
+                      <div
+                        key={notification.id}
+                        className={`p-3 text-sm hover:bg-gray-50 cursor-pointer transition-colors ${!notification.read ? 'bg-blue-50/50' : ''}`}
+                        onClick={() => {
+                          if (notification.link) navigate(notification.link);
+                        }}
+                      >
+                        <div className="flex gap-3">
+                          <div className="mt-1">
+                            {getIcon(notification.type)}
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <p className="font-medium text-gray-900 leading-none">
+                              {notification.title}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              {notification.message}
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              {formatDistanceToNow(notification.date, { addSuffix: true, locale: ptBR })}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -123,7 +98,6 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -138,7 +112,7 @@ export function Header() {
                 Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => {
+              <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => {
                 logout();
                 navigate('/login');
               }}>

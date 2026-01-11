@@ -315,7 +315,7 @@ export default function OrderForm() {
                             <div className="text-xl font-bold">Total: R$ {total.toFixed(2)}</div>
                             <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={() => navigate('/orders')}>Cancelar</Button>
-                                <Button type="submit" className="bg-[#FF6B6B] hover:bg-[#FF5252]">Salvar Pedido</Button>
+                                <Button type="submit" className="bg-primary hover:bg-primary/90">Salvar Pedido</Button>
                             </div>
                         </div>
                     </form>
