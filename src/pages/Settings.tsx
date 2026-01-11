@@ -209,6 +209,100 @@ export default function Settings() {
           </Card>
         )}
 
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="text-blue-700">Backup e Restauração</CardTitle>
+            <CardDescription className="text-blue-600">Salve seus dados em um arquivo seguro</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-white rounded border border-blue-100">
+              <div>
+                <h4 className="font-medium text-blue-900">Exportar Dados</h4>
+                <p className="text-sm text-blue-700">Baixe um arquivo Backup com todos os seus registros.</p>
+              </div>
+              <Button onClick={() => {
+                const data: Record<string, any> = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                  const key = localStorage.key(i);
+                  if (key && key.startsWith('cerejas_')) {
+                    data[key] = JSON.parse(localStorage.getItem(key) || 'null');
+                  }
+                }
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_cerejas_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success('Backup baixado com sucesso!');
+              }}>
+                <User className="w-4 h-4 mr-2" />
+                Baixar Backup
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white rounded border border-blue-100">
+              <div>
+                <h4 className="font-medium text-blue-900">Restaurar Dados</h4>
+                <p className="text-sm text-blue-700">Recupere dados de um arquivo Backup.</p>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  id="backup-upload"
+                  className="hidden"
+                  accept=".json"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    if (!window.confirm('ATENÇÃO: Isso irá substituir TODOS os dados atuais pelos do arquivo. Deseja continuar?')) {
+                      e.target.value = '';
+                      return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      try {
+                        const json = JSON.parse(event.target?.result as string);
+                        // Validate basic structure
+                        if (typeof json !== 'object') throw new Error('Arquivo inválido');
+
+                        // Clear current app data
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                          const key = localStorage.key(i);
+                          if (key && key.startsWith('cerejas_')) {
+                            keysToRemove.push(key);
+                          }
+                        }
+                        keysToRemove.forEach(k => localStorage.removeItem(k));
+
+                        // Restore data
+                        Object.keys(json).forEach(key => {
+                          if (key.startsWith('cerejas_')) {
+                            localStorage.setItem(key, JSON.stringify(json[key]));
+                          }
+                        });
+
+                        toast.success('Dados restaurados! Recarregando...');
+                        setTimeout(() => window.location.reload(), 1500);
+                      } catch (err) {
+                        toast.error('O arquivo de backup é inválido ou está corrompido.');
+                      }
+                    };
+                    reader.readAsText(file);
+                  }}
+                />
+                <Button variant="outline" onClick={() => document.getElementById('backup-upload')?.click()}>
+                  Upload Backup
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
             <CardTitle className="text-red-700">Zona de Perigo</CardTitle>

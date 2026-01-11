@@ -11,7 +11,12 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export function Sidebar() {
+interface SidebarProps {
+    className?: string;
+    onClose?: () => void;
+}
+
+export function Sidebar({ className = "", onClose }: SidebarProps) {
     const navItems = [
         { href: '/', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/catalog', label: 'Catálogo', icon: Package },
@@ -22,19 +27,25 @@ export function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r h-screen fixed left-0 top-0 flex flex-col z-50">
-            <div className="p-6 border-b">
+        <aside className={`w-64 bg-white border-r h-screen fixed left-0 top-0 flex flex-col z-50 transition-transform duration-300 ${className}`}>
+            <div className="p-6 border-b flex justify-between items-center">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent flex items-center gap-2">
                     <Cherry className="w-6 h-6 text-red-500" />
                     Cerejas Festas
                 </h1>
+                {onClose && (
+                    <button onClick={onClose} className="md:hidden text-gray-500">
+                        <LogOut className="w-5 h-5 rotate-180" />
+                    </button>
+                )}
             </div>
 
-            <nav className="flex-1 p-4 space-y-1">
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {navItems.map((item) => (
                     <NavLink
                         key={item.href}
                         to={item.href}
+                        onClick={onClose}
                         className={({ isActive }) =>
                             `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
                                 ? 'bg-red-50 text-red-600'
