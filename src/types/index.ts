@@ -120,6 +120,7 @@ export interface OrderItem {
     item_name: string;
     quantity: number;
     unit_value: number;
+    replacement_value?: number;
     total_value: number;
 }
 

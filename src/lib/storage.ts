@@ -11,7 +11,7 @@ const STORAGE_KEYS = {
     USER: 'cerejas_users_db' // Changed to avoid conflict with auth session key 'cerejas_user'
 };
 
-// Helper to generate sequential codes (e.g., CAD-001, PED-001)
+// Helper to generate sequential codes (e.g., CEF-001, PED-001)
 function generateSequentialCode(prefix: string, existingCodes: string[]): string {
     const numbers = existingCodes
         .map(code => {
@@ -243,7 +243,7 @@ export const itemStorage = {
     create(data: Omit<Item, 'id' | 'code' | 'created_at' | 'updated_at'>, user: User): Item {
         const items = this.getAll();
         const existingCodes = items.map(i => i.code);
-        const nextCode = generateSequentialCode('CAD-', existingCodes);
+        const nextCode = generateSequentialCode('CEF-', existingCodes);
 
         const newItem: Item = {
             ...data,

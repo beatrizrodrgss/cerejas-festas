@@ -136,11 +136,11 @@ export default function Orders() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="text-gray-500">Retirada</p>
-                  <p>{order.pickup_date ? format(new Date(order.pickup_date), 'dd/MM/yyyy') : '-'}</p>
+                  <p>{order.pickup_date ? order.pickup_date.split('-').reverse().join('/') : '-'}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Devolução</p>
-                  <p>{order.return_date ? format(new Date(order.return_date), 'dd/MM/yyyy') : '-'}</p>
+                  <p>{order.return_date ? order.return_date.split('-').reverse().join('/') : '-'}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Itens</p>

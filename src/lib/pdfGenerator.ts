@@ -47,8 +47,8 @@ export function generateOrderPDF(order: Order) {
       <div class="section">
         <div class="section-title">Detalhes da Locação</div>
         <div class="row"><span class="label">Tipo de Festa:</span> ${order.party_type}</div>
-        <div class="row"><span class="label">Retirada:</span> ${order.pickup_date ? format(new Date(order.pickup_date), 'dd/MM/yyyy') : '-'}</div>
-        <div class="row"><span class="label">Devolução:</span> ${order.return_date ? format(new Date(order.return_date), 'dd/MM/yyyy') : '-'}</div>
+        <div class="row"><span class="label">Retirada:</span> ${order.pickup_date ? order.pickup_date.split('-').reverse().join('/') : '-'}</div>
+        <div class="row"><span class="label">Devolução:</span> ${order.return_date ? order.return_date.split('-').reverse().join('/') : '-'}</div>
         <div class="row"><span class="label">Pagamento:</span> ${order.payment_method}</div>
       </div>
 
@@ -60,6 +60,7 @@ export function generateOrderPDF(order: Order) {
               <th>Item</th>
               <th>Qtd</th>
               <th>Valor Unit.</th>
+              <th>Valor Repos.</th>
               <th>Total</th>
             </tr>
           </thead>
@@ -69,6 +70,7 @@ export function generateOrderPDF(order: Order) {
                 <td>${item.item_name}</td>
                 <td>${item.quantity}</td>
                 <td>R$ ${item.unit_value.toFixed(2)}</td>
+                <td>R$ ${item.replacement_value ? item.replacement_value.toFixed(2) : '-'}</td>
                 <td>R$ ${item.total_value.toFixed(2)}</td>
               </tr>
             `).join('')}

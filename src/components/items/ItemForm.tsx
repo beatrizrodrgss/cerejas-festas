@@ -122,7 +122,9 @@ export function ItemForm({ onSuccess, initialData }: ItemFormProps) {
 
   const startCamera = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' } // Câmera traseira
+      });
       setStream(mediaStream);
       setIsCameraOpen(true);
       // Wait for modal to open and video ref to be attached

@@ -214,7 +214,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-destructive">
-                        {order.return_date ? format(new Date(order.return_date), 'dd/MM/yyyy') : '-'}
+                        {order.return_date ? order.return_date.split('-').reverse().join('/') : '-'}
                       </p>
                       <p className="text-gray-500 text-xs">{order.items.length} itens</p>
                     </div>
