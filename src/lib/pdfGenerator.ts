@@ -1,6 +1,18 @@
 import { Order } from '@/types';
 import { format } from 'date-fns';
 
+function translatePaymentMethod(method: string): string {
+  const translations: Record<string, string> = {
+    'CASH': 'Dinheiro',
+    'CREDIT_CARD': 'Cartão de Crédito',
+    'DEBIT_CARD': 'Cartão de Débito',
+    'PIX': 'PIX',
+    'BANK_TRANSFER': 'Transferência Bancária',
+    'CHECK': 'Cheque'
+  };
+  return translations[method] || method;
+}
+
 export function generateOrderPDF(order: Order) {
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
@@ -49,7 +61,7 @@ export function generateOrderPDF(order: Order) {
         <div class="row"><span class="label">Tipo de Festa:</span> ${order.party_type}</div>
         <div class="row"><span class="label">Retirada:</span> ${order.pickup_date ? order.pickup_date.split('-').reverse().join('/') : '-'}</div>
         <div class="row"><span class="label">Devolução:</span> ${order.return_date ? order.return_date.split('-').reverse().join('/') : '-'}</div>
-        <div class="row"><span class="label">Pagamento:</span> ${order.payment_method}</div>
+        <div class="row"><span class="label">Pagamento:</span> ${translatePaymentMethod(order.payment_method)}</div>
       </div>
 
       <div class="section">
